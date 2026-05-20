@@ -1,0 +1,10 @@
+ntp-dst
+ntp-with-dst
+*.exe
+*.test
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.env
