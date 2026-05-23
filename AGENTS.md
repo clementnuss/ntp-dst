@@ -34,6 +34,6 @@ Dockerfile uses `golang:1.23-alpine` but `go.mod` specifies `go 1.26.2`. Build m
 
 - `ops.json` — x86_64 config (Flavor: `VM.Standard.E2.1.Micro`)
 - `ops.arm64.json` — ARM64/Ampere A1 config (Flavor: `VM.Standard.A1.Flex`)
-- Build uses `-tags tzdata` to embed timezone data (no `/usr/share/zoneinfo` needed in image)
+- `_ "time/tzdata"` import in main.go embeds timezone data (no `/usr/share/zoneinfo` needed in image)
 - `CGO_ENABLED=0` ensures pure-Go DNS resolver (no NSS shared libs needed)
 - No CA certs or shared libraries needed — NTP uses UDP, not TLS

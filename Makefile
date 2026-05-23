@@ -1,10 +1,10 @@
 .PHONY: build build-arm64 build-unikernel build-unikernel-arm64 test clean
 
 build:
-	CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -tags tzdata -o ntp-dst .
+	CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o ntp-dst .
 
 build-arm64:
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -tags tzdata -o ntp-dst-arm64 .
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o ntp-dst-arm64 .
 
 build-unikernel: build
 	ops image create ntp-dst -c ops.json
