@@ -10,12 +10,11 @@
 
 Single `main` package; no internal packages or modules.
 
-- `main.go` — CLI flags, simulation runner, real-server startup
-- `scheduler.go` — `DSTScheduler`: detects CET/CEST transitions via `time.LoadLocation("Europe/Zurich")`, triggers slew
-- `source.go` — `TimeSource`: serves faked time (UTC + dstCorrection + slew). Holds mutex-protected state for NTP offset, DST correction, slew rate/skew
+- `main.go` — CLI flags, real-server startup
+- `scheduler.go` — `DSTScheduler`: detects CET/CEST transitions via `time.LoadLocation("Europe/Zurich")`, applies correction immediately
+- `source.go` — `TimeSource`: serves faked time (UTC + dstCorrection). Holds mutex-protected state for NTP offset, DST correction, skew
 - `server.go` — UDP NTP server; responds to queries with faked time
 - `ntp.go` — NTP packet marshal/unmarshal (48-byte SNTP)
-- `clock.go` — `Clock` interface with `RealClock` and `SimulatedClock` implementations. `SimulatedClock.Advance()` drives time in tests and simulation mode
 
 ## Key Design Facts
 
@@ -29,4 +28,3 @@ Single `main` package; no internal packages or modules.
 ## Dockerfile Note
 
 Dockerfile uses `golang:1.23-alpine` but `go.mod` specifies `go 1.26.2`. Build may fail if the Dockerfile Go version is older than the module's Go directive. Adjust Dockerfile base image if needed.
-

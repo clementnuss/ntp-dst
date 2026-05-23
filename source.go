@@ -14,34 +14,25 @@ type TimeSource struct {
 	ntpOffset     time.Duration
 	dstCorrection time.Duration
 	skew          time.Duration
-	clock         Clock
 	ntpServer     string
 	syncInterval  time.Duration
 }
 
-func NewTimeSource(ntpServer string, clock Clock) *TimeSource {
-	if clock == nil {
-		clock = RealClock{}
-	}
+func NewTimeSource(ntpServer string) *TimeSource {
 	return &TimeSource{
 		ntpServer:    ntpServer,
 		syncInterval: 5 * time.Minute,
-		clock:        clock,
 	}
 }
 
 func (ts *TimeSource) Run() {
-	if _, ok := ts.clock.(*SimulatedClock); ok {
-		log.Println("Simulation mode: skipping NTP sync")
-		return
-	}
 	for {
 		if err := ts.sync(); err != nil {
 			log.Printf("NTP sync failed: %v", err)
 		} else {
 			log.Printf("NTP sync ok, offset: %v, dst-correction: %v", ts.GetNtpOffset(), ts.GetDstCorrection())
 		}
-		<-ts.clock.After(ts.syncInterval)
+		time.Sleep(ts.syncInterval)
 	}
 }
 
@@ -72,7 +63,7 @@ func (ts *TimeSource) Now() time.Time {
 	ts.mu.RLock()
 	defer ts.mu.RUnlock()
 
-	realUTC := ts.clock.Now().UTC().Add(ts.ntpOffset).Add(ts.skew)
+	realUTC := time.Now().UTC().Add(ts.ntpOffset).Add(ts.skew)
 	return realUTC.Add(ts.dstCorrection)
 }
 

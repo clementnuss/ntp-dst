@@ -7,17 +7,13 @@ import (
 
 type DSTScheduler struct {
 	source      *TimeSource
-	clock       Clock
 	clockOffset time.Duration
 	lastIsDST   bool
 	initialized bool
 }
 
-func NewDSTScheduler(source *TimeSource, clock Clock, clockOffset time.Duration) *DSTScheduler {
-	if clock == nil {
-		clock = RealClock{}
-	}
-	return &DSTScheduler{source: source, clock: clock, clockOffset: clockOffset}
+func NewDSTScheduler(source *TimeSource, clockOffset time.Duration) *DSTScheduler {
+	return &DSTScheduler{source: source, clockOffset: clockOffset}
 }
 
 func (d *DSTScheduler) Run() {
@@ -27,7 +23,7 @@ func (d *DSTScheduler) Run() {
 	}
 
 	for {
-		nowLocal := d.clock.Now().In(loc)
+		nowLocal := time.Now().In(loc)
 		_, offset := nowLocal.Zone()
 		isDST := offset == 2*3600
 
@@ -49,7 +45,7 @@ func (d *DSTScheduler) Run() {
 		}
 
 		d.lastIsDST = isDST
-		<-d.clock.After(10 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
 

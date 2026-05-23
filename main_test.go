@@ -5,20 +5,6 @@ import (
 	"time"
 )
 
-func TestSimulatedClock(t *testing.T) {
-	start := time.Date(2025, 3, 30, 0, 0, 0, 0, time.UTC)
-	sim := NewSimulatedClock(start)
-
-	if !sim.Now().Equal(start) {
-		t.Errorf("expected %v, got %v", start, sim.Now())
-	}
-
-	sim.Advance(1 * time.Hour)
-	if !sim.Now().Equal(start.Add(1 * time.Hour)) {
-		t.Errorf("expected %v, got %v", start.Add(1*time.Hour), sim.Now())
-	}
-}
-
 func TestDstCorrection_Winter(t *testing.T) {
 	clockOffset := 1 * time.Hour
 
@@ -60,30 +46,6 @@ func TestDstCorrection_ClockOffset2h(t *testing.T) {
 	}
 	if correction := scheduler.dstCorrection(true); correction != 0 {
 		t.Errorf("CEST with clock+2h: correction should be 0, got %v", correction)
-	}
-}
-
-func TestTimeSource_Winter(t *testing.T) {
-	sim := NewSimulatedClock(time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC))
-	source := NewTimeSource("", sim)
-	source.SetDstCorrection(0)
-
-	now := source.Now()
-
-	if now.UTC().Format("15:04:05") != "10:00:00" {
-		t.Errorf("Winter: NTP should serve UTC (no correction), got %s", now.UTC().Format("15:04:05"))
-	}
-}
-
-func TestTimeSource_Summer(t *testing.T) {
-	sim := NewSimulatedClock(time.Date(2025, 6, 15, 10, 0, 0, 0, time.UTC))
-	source := NewTimeSource("", sim)
-	source.SetDstCorrection(1 * time.Hour)
-
-	now := source.Now()
-
-	if now.UTC().Format("15:04:05") != "11:00:00" {
-		t.Errorf("Summer: NTP should serve UTC+1h, got %s", now.UTC().Format("15:04:05"))
 	}
 }
 

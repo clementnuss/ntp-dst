@@ -39,41 +39,15 @@ Usage of ntp-dst:
   -port int          UDP port to listen on (default 123)
   -ntp string        Upstream NTP server pool (default "ch.pool.ntp.org")
   -clock-offset      Fixed UTC offset configured on the clock (default 1h)
-  -simulate string   Simulate starting at this time (RFC3339)
-  -speed float       Simulation speed multiplier (default 120)
-  -sim-duration      Max simulation wall time (default 3m)
-```
-
-## Simulation Mode
-
-Test DST transitions without waiting for the real thing:
-
-```bash
-# Spring forward, clock configured as UTC+1
-./ntp-dst -port 1234 -simulate 2025-03-30T00:30:00Z -speed 360 -clock-offset 1h
-
-# Fall back, clock configured as UTC+1
-./ntp-dst -port 1234 -simulate 2025-10-25T23:30:00Z -speed 360 -clock-offset 1h
-```
-
-The simulation output shows "Clock Shows" — what your physical Mondaine clock would display:
-
-```
-Wall(s)  | Sim UTC     | Zurich Real          | NTP Serves  | Clock Shows
--------------------------------------------------------------------------------
-0.5      | 00:33:00    | 2025-03-30 01:33:00 CET | 00:33:00    | 01:33:00
-5.0      | 01:00:00    | 2025-03-30 03:00:00 CEST | 01:00:00    | 02:00:00
-15.0     | 02:00:00    | 2025-03-30 04:00:00 CEST | 03:00:00    | 04:00:00
 ```
 
 ## Architecture
 
-- **`main.go`** — Entry point, CLI flags, simulation runner
-- **`scheduler.go`** — DST transition detection and slew triggering
+- **`main.go`** — Entry point, CLI flags
+- **`scheduler.go`** — DST transition detection and correction
 - **`source.go`** — Time source with NTP sync and DST correction
 - **`server.go`** — UDP NTP server with query logging
 - **`ntp.go`** — NTP packet marshaling/unmarshaling
-- **`clock.go`** — Clock interface (real/simulated) for testability
 
 ## Docker
 
