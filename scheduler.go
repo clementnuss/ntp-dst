@@ -42,40 +42,10 @@ func (d *DSTScheduler) Run() {
 
 		if !d.lastIsDST && isDST {
 			log.Println("DST transition: CET -> CEST (spring forward)")
-			nowUTC := d.clock.Now().UTC()
-			slewStart := time.Date(nowUTC.Year(), nowUTC.Month(), nowUTC.Day(), 1, 0, 0, 0, time.UTC)
-			slewEnd := slewStart.Add(1 * time.Hour)
-			baseCorrection := d.dstCorrection(false)
-			d.source.SetSlew(slewStart, 2.0, baseCorrection)
-			remaining := slewEnd.Sub(nowUTC)
-			if remaining > 0 {
-				go func() {
-					<-d.clock.After(remaining)
-					d.source.ClearSlew(d.dstCorrection(true))
-					log.Println("Spring-forward slew complete")
-				}()
-			} else {
-				d.source.ClearSlew(d.dstCorrection(true))
-				log.Println("Spring-forward slew already complete")
-			}
+			d.source.SetDstCorrection(d.dstCorrection(true))
 		} else if d.lastIsDST && !isDST {
 			log.Println("DST transition: CEST -> CET (fall back)")
-			nowUTC := d.clock.Now().UTC()
-			slewStart := time.Date(nowUTC.Year(), nowUTC.Month(), nowUTC.Day(), 0, 0, 0, 0, time.UTC)
-			slewEnd := slewStart.Add(2 * time.Hour)
-			baseCorrection := d.dstCorrection(true)
-			d.source.SetSlew(slewStart, 0.5, baseCorrection)
-			remaining := slewEnd.Sub(nowUTC)
-			if remaining > 0 {
-				go func() {
-					<-d.clock.After(remaining)
-					d.source.ClearSlew(d.dstCorrection(false))
-					log.Println("Fall-back slew complete")
-				}()
-			} else {
-				d.source.ClearSlew(d.dstCorrection(false))
-				log.Println("Fall-back slew already complete")
-			}
+			d.source.SetDstCorrection(d.dstCorrection(false))
 		}
 
 		d.lastIsDST = isDST

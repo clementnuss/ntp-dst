@@ -66,9 +66,9 @@ func runSimulation(port int, ntpServer string, clockOffset time.Duration, simTim
 
 	fmt.Printf("Simulation: start=%s speed=%.0fx clock-offset=%s\n\n",
 		startTime.UTC().Format("2006-01-02 15:04:05 MST"), speed, clockOffset)
-	fmt.Printf("%-8s | %-11s | %-20s | %-11s | %-11s | %s\n",
-		"Wall(s)", "Sim UTC", "Zurich Real", "NTP Serves", "Clock Shows", "Status")
-	fmt.Println("-------------------------------------------------------------------------------------")
+	fmt.Printf("%-8s | %-11s | %-20s | %-11s | %-11s\n",
+		"Wall(s)", "Sim UTC", "Zurich Real", "NTP Serves", "Clock Shows")
+	fmt.Println("-------------------------------------------------------------------------------")
 
 	wallStart := time.Now()
 	wallTimeout := time.After(maxWallTime)
@@ -83,22 +83,14 @@ func runSimulation(port int, ntpServer string, clockOffset time.Duration, simTim
 			now := sim.Now()
 			fakeTime := source.Now()
 			clockShows := fakeTime.UTC().Add(clockOffset)
-			slewActive := source.SlewActive()
-			rate, _, _ := source.SlewInfo()
-
-			status := ""
-			if slewActive {
-				status = fmt.Sprintf("SLEW(%.1fx)", rate)
-			}
 
 			wallElapsed := time.Since(wallStart).Seconds()
-			fmt.Printf("%-8.1f | %-11s | %-20s | %-11s | %-11s | %s\n",
+			fmt.Printf("%-8.1f | %-11s | %-20s | %-11s | %-11s\n",
 				wallElapsed,
 				now.UTC().Format("15:04:05"),
 				now.In(loc).Format("2006-01-02 15:04:05 MST"),
 				fakeTime.UTC().Format("15:04:05"),
 				clockShows.Format("15:04:05"),
-				status,
 			)
 
 		case <-wallTimeout:

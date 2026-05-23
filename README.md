@@ -6,19 +6,14 @@ A fake NTP server for Mondaine SBB wall clocks (and similar dumb NTP clocks) tha
 
 The Mondaine MSM.25S11 clock treats NTP time as UTC and adds a **fixed** offset configured during setup. It syncs only once per 24 hours to save battery. If configured as UTC+1 (winter/CET), it will always add +1h — even during summer.
 
-This server serves `UTC + dstCorrection` where `dstCorrection = correctLocalOffset - clockOffset`. For a clock configured as UTC+1:
+This server serves `UTC + dstCorrection` where `dstCorrection = correctLocalOffset - clockOffset`. When a DST transition is detected, the correction is applied immediately. For a clock configured as UTC+1:
 
 | Season | Correct offset | Clock offset | DST correction | NTP serves | Clock displays |
 |--------|---------------|--------------|----------------|------------|----------------|
 | CET    | UTC+1         | +1h          | 0              | UTC+0      | UTC+0+1h = correct |
 | CEST   | UTC+2         | +1h          | +1h            | UTC+1h     | UTC+1h+1h = correct |
 
-During a DST transition, if the clock happens to sync during the transition window, the server gradually slews the time so the clock adjusts smoothly:
-
-- **Spring forward** (CET→CEST): 2x speed for 1 hour
-- **Fall back** (CEST→CET): 0.5x speed for 2 hours
-
-Since the clock syncs only once per day, the slew mostly matters for correctness at the exact moment of sync. If the clock syncs outside the transition window (very likely), it simply gets the correct static offset.
+Since the clock syncs only once per day, the correction takes effect the next time it syncs.
 
 ## Quick Start
 
@@ -64,13 +59,11 @@ Test DST transitions without waiting for the real thing:
 The simulation output shows "Clock Shows" — what your physical Mondaine clock would display:
 
 ```
-Wall(s)  | Sim UTC     | Zurich Real          | NTP Serves  | Clock Shows | Status
--------------------------------------------------------------------------------------
-0.5      | 00:33:00    | 2025-03-30 01:33:00 CET | 00:33:00    | 01:33:00    | 
-5.0      | 01:00:00    | 2025-03-30 03:00:00 CEST | 01:00:00    | 02:00:00    | 
-7.5      | 01:15:00    | 2025-03-30 03:15:00 CEST | 01:30:00    | 02:30:00    | SLEW(2.0x)
-15.0     | 02:00:00    | 2025-03-30 04:00:00 CEST | 03:00:00    | 04:00:00    | SLEW(2.0x)
-15.5     | 02:03:00    | 2025-03-30 04:03:00 CEST | 03:03:00    | 04:03:00    | 
+Wall(s)  | Sim UTC     | Zurich Real          | NTP Serves  | Clock Shows
+-------------------------------------------------------------------------------
+0.5      | 00:33:00    | 2025-03-30 01:33:00 CET | 00:33:00    | 01:33:00
+5.0      | 01:00:00    | 2025-03-30 03:00:00 CEST | 01:00:00    | 02:00:00
+15.0     | 02:00:00    | 2025-03-30 04:00:00 CEST | 03:00:00    | 04:00:00
 ```
 
 ## Architecture

@@ -21,7 +21,7 @@ Single `main` package; no internal packages or modules.
 
 - Timezone is hardcoded to **Europe/Zurich** (CET/CEST)
 - DST detection compares `Zone()` offset: `7200` = CEST (summer), `3600` = CET (winter)
-- Slew during transitions: spring forward = **2x rate for 1h**, fall back = **0.5x rate for 2h**
+- DST corrections are applied immediately on transition (no slew/gradual adjustment)
 - Clock syncs once per 24h (hardware constraint of [Mondaine MSM.25S11](https://lieven.kks36.be/2023/11/08/how-smart-is-the-mondaine-msm-25s11-wifi-wall-clock/)); clock treats NTP time as UTC and applies a fixed offset, has no DST awareness
 - Go module path is `github.com/clementnuss/ntp-with-dst` (note: "ntp-with-dst", not "ntp-dst")
 - Port 123 (default) requires root; use `-port 1234` for local testing
