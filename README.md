@@ -18,7 +18,7 @@ Since the clock syncs only once per day, the correction takes effect the next ti
 ## Quick Start
 
 ```bash
-go build -o ntp-dst .
+make build
 
 # For a clock configured as UTC+1 (CET / winter time) — the default
 sudo ./ntp-dst -port 123
@@ -58,10 +58,43 @@ docker run -d --name ntp-dst \
   ntp-dst -clock-offset 1h
 ```
 
+## Unikernel (Nanos)
+
+Run as a [Nanos](https://nanos.org) unikernel via [OPS](https://ops.city) — no OS to maintain, no SSH, minimal attack surface.
+
+```bash
+# Install OPS
+curl https://ops.city/get.sh -sSfL | sh
+
+# x86_64 (VM.Standard.E2.1.Micro)
+make build-unikernel
+ops run -c ops.json ntp-dst
+
+# ARM64 / Ampere A1 (VM.Standard.A1.Flex)
+make build-unikernel-arm64
+ops run -c ops.arm64.json ntp-dst-arm64
+```
+
+### Deploy to OCI
+
+Fill in `BucketName` and `BucketNamespace` in `ops.json` or `ops.arm64.json`, then:
+
+```bash
+# x86_64
+ops image create ntp-dst -t oci -c ops.json
+ops instance create ntp-dst -t oci -c ops.json
+
+# ARM64
+ops image create ntp-dst-arm64 -t oci -c ops.arm64.json --arch=arm64
+ops instance create ntp-dst-arm64 -t oci -c ops.arm64.json
+```
+
+Remember to open UDP 123 in your OCI security list for the instance's VCN.
+
 ## Running Tests
 
 ```bash
-go test -v ./...
+make test
 ```
 
 ## Reference

@@ -1,0 +1,15 @@
+{
+  "Args": ["-port", "123", "-ntp", "ch.pool.ntp.org", "-clock-offset", "1h"],
+  "CloudConfig": {
+    "BucketName": "<your-bucket>",
+    "BucketNamespace": "<your-namespace>",
+    "Flavor": "VM.Standard.E2.1.Micro"
+  },
+  "RunConfig": {
+    "Memory": "128M",
+    "UDPPorts": ["123"]
+  },
+  "ManifestPassthrough": {
+    "exec_wait_for_ip4_secs": "5"
+  }
+}

@@ -1,5 +1,5 @@
 ntp-dst
-ntp-with-dst
+ntp-dst-arm64
 *.exe
 *.test
 .idea/

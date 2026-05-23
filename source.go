@@ -30,7 +30,7 @@ func (ts *TimeSource) Run() {
 		if err := ts.sync(); err != nil {
 			log.Printf("NTP sync failed: %v", err)
 		} else {
-			log.Printf("NTP sync ok, offset: %v, dst-correction: %v", ts.GetNtpOffset(), ts.GetDstCorrection())
+			debugf("NTP sync ok, offset: %v, dst-correction: %v", ts.GetNtpOffset(), ts.GetDstCorrection())
 		}
 		time.Sleep(ts.syncInterval)
 	}
