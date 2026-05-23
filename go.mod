@@ -1,4 +1,4 @@
-module github.com/clementnuss/ntp-with-dst
+module github.com/clementnuss/ntp-dst
 
 go 1.26.2
 

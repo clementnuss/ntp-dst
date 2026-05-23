@@ -1,4 +1,4 @@
-# ntp-with-dst
+# ntp-dst
 
 A fake NTP server for Mondaine SBB wall clocks (and similar dumb NTP clocks) that compensates for daylight saving time transitions. The clock applies a fixed UTC offset and doesn't know about DST — this server fakes the NTP time so the clock always shows the correct local time.
 
